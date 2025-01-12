@@ -58,7 +58,7 @@ public class CustomerServiceImpl implements CustomerService {
             Optional<CustomerEntity> customerEntity = customerRepository.findById(customerBean.getCustomerId());
             if (!customerEntity.isPresent()) {
                 logger.info("Customer does not exists with CustomerName: " + customerBean.getCustomerName());
-                throw new FmkException("C1001", Errors.getValue("C1001", new String[]{customerBean.getCustomerName()}));
+                throw new FmkException("C1001","Customer does not exists with Customer Id: " + customerBean.getCustomerId());
             }
             customerEntity.get().setCustomerId(customerBean.getCustomerId());
             customerEntity.get().setCustomerEmail(customerBean.getCustomerEmail());
@@ -97,11 +97,11 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerBean getCustomerByIdOrCustomerName(String customerName) throws FmkException {
         if (customerName == null){
-            throw  new FmkException("C1001", Errors.getValue("C1001", new String[]{customerName}));
+            throw  new FmkException("C1001","Customer does not exists with Customer name: " + customerName);
         }
         CustomerEntity customerEntity = customerRepository.findByCustomerName(customerName);
         if (customerEntity== null){
-            throw  new FmkException("C1001", Errors.getValue("C1001", new String[]{customerName}));
+            throw  new FmkException("C1001","Customer does not exists with Customer name: " + customerName);
         }else {
             CustomerBean customerBean = new CustomerBean();
             BeanUtils.copyProperties(customerEntity,customerBean);
@@ -113,7 +113,7 @@ public class CustomerServiceImpl implements CustomerService {
     public void deleteCustomerById(int id) throws FmkException {
         if (id == 0){
             logger.info("Invalid customer ID: "+id);
-            throw  new FmkException("C1002", Errors.getValue("C1002", new String[]{String.valueOf(id)}));
+            throw  new FmkException("C1002","Invalid customer Id: " + String.valueOf(id));
         }
         customerRepository.deleteById(id);
     }

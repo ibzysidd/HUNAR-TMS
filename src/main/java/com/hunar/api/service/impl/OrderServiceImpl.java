@@ -108,7 +108,7 @@ public class OrderServiceImpl implements OrderService {
     private Address checkByAddressId(int idAddress) throws FmkException {
         Optional<Address> address = addressRepository.findById(idAddress);
         if (!address.isPresent()) {
-            throw new FmkException("A1001", Errors.getValue("A1001", new String[]{String.valueOf(idAddress)}));
+            throw new FmkException("A1002","Invalid Address Id: "+String.valueOf(idAddress));
         }
         return address.get();
     }
@@ -116,7 +116,7 @@ public class OrderServiceImpl implements OrderService {
     private CustomerEntity checkByCustomerId(int idCustomer) throws FmkException {
         Optional<CustomerEntity> customer = customerRepository.findById(idCustomer);
         if (!customer.isPresent()) {
-            throw new FmkException("A1001", Errors.getValue("A1001", new String[]{String.valueOf(idCustomer)}));
+            throw new FmkException("C1001", "Invalid customer Id: "+String.valueOf(idCustomer));
         }
         return customer.get();
     }
@@ -148,7 +148,7 @@ public class OrderServiceImpl implements OrderService {
             Optional<Order> orderEntity = orderRepository.findById(orderBean.getOrderId());
             if (!orderEntity.isPresent()) {
                 logger.info("Order does not exists with OrderName: " + orderBean.getOrderId());
-                throw new FmkException("O1001", Errors.getValue("O1001", new String[]{String.valueOf(orderBean.getOrderId())}));
+                throw new FmkException("O1001","Order does not exists with Order Id: " + String.valueOf(orderBean.getOrderId()));
             }
             orderEntity.get().setOrderId(orderBean.getOrderId());
             orderEntity.get().setAmount(orderBean.getAmount());
@@ -210,11 +210,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderBean getOrderById(int idOrder) throws FmkException {
         if (idOrder <= 0) {
-            throw new FmkException("O1001", Errors.getValue("O1001", new String[]{String.valueOf(idOrder)}));
+            throw new FmkException("O1001", "Order does not exists with Order Id: " + String.valueOf(idOrder));
         }
         Optional<Order> orderEntity = orderRepository.findById(idOrder);
         if (!orderEntity.isPresent()) {
-            throw new FmkException("O1001", Errors.getValue("O1001", new String[]{String.valueOf(idOrder)}));
+            throw new FmkException("O1001","Order does not exists with Order Id: " + String.valueOf(idOrder));
         } else {
             OrderBean orderBean = new OrderBean();
             BeanUtils.copyProperties(orderEntity, orderBean);
@@ -226,7 +226,7 @@ public class OrderServiceImpl implements OrderService {
     public String deleteOrderById(int idOrder) throws FmkException {
         if (idOrder == 0) {
             logger.info("Invalid order ID: " + idOrder);
-            throw new FmkException("O1002", Errors.getValue("O1002", new String[]{String.valueOf(idOrder)}));
+            throw new FmkException("O1002", "Invalid order ID: " + String.valueOf(idOrder));
         }
         orderRepository.deleteById(idOrder);
         return "Order deleted succesffuly";

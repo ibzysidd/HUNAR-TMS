@@ -53,7 +53,7 @@ public class LoginController {
     }
 
     @PostMapping("/forgotPassword")
-    public String forgotPassword(PasswordBean passwordBean) throws FmkException {
+    public String forgotPassword(@RequestBody PasswordBean passwordBean) throws FmkException {
         return userService.forgotPassword(passwordBean);
     }
 

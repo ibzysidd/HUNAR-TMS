@@ -37,7 +37,7 @@ public class AddressServiceImpl implements AddressService {
         BeanUtils.copyProperties(addressBean,addressEntity);
         Optional<CustomerEntity> customer = customerRepository.findById(addressBean.getIdCustomer());
         if (!customer.isPresent()){
-            throw new FmkException("C1001", Errors.getValue("C1001", new String[]{String.valueOf(addressBean.getIdCustomer())}));
+            throw new FmkException("C1001", "Invalid customer id: "+ String.valueOf(addressBean.getIdCustomer()));
         }
         addressEntity.setCustomer(customer.get());
        addressEntity= addressRepository.save(addressEntity);
@@ -53,8 +53,8 @@ public class AddressServiceImpl implements AddressService {
             logger.info("Updating address: " + addressBean.getIdAddress());
             Optional<Address> addressEntity = addressRepository.findById(addressBean.getIdAddress());
             if (!addressEntity.isPresent()) {
-                logger.info("Address does not exists with AddressName: " + addressBean.getIdAddress());
-                throw new FmkException("A1001", Errors.getValue("A1001", new String[]{String.valueOf(addressBean.getIdAddress())}));
+                logger.info("Address does not exists with Address Id: " + addressBean.getIdAddress());
+                throw new FmkException("A1001","Address does not exists with Address Id: " + addressBean.getIdAddress());
             }
             addressEntity.get().setIdAddress(addressBean.getIdAddress());
             addressEntity.get().setAddressLine(addressBean.getAddressLine());
@@ -89,11 +89,11 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public AddressBean getAddressById(int idAddress) throws FmkException {
         if (idAddress <= 0){
-            throw  new FmkException("A1001", Errors.getValue("A1001", new String[]{String.valueOf(idAddress)}));
+            throw  new FmkException("A1002","Invalid Address Id: " + idAddress);
         }
         Optional<Address> addressEntity = addressRepository.findById(idAddress);
         if (!addressEntity.isPresent()){
-            throw  new FmkException("A1001", Errors.getValue("A1001", new String[]{String.valueOf(idAddress)}));
+            throw  new FmkException("A1001","Address does not exists with Address Id: " + idAddress);
         }else {
             AddressBean addressBean = new AddressBean();
             BeanUtils.copyProperties(addressEntity,addressBean);
@@ -105,7 +105,7 @@ public class AddressServiceImpl implements AddressService {
     public String deleteAddressById(int idAddress) throws FmkException {
         if (idAddress == 0){
             logger.info("Invalid address ID: "+idAddress);
-            throw  new FmkException("A1002", Errors.getValue("A1002", new String[]{String.valueOf(idAddress)}));
+            throw  new FmkException("A1002", "Invalid Address Id: "+idAddress);
         }
         addressRepository.deleteById(idAddress);
         return "Address deleted successfully";
