@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 			Optional<UserEntity> userEntity = userRepository.findById(userBean.getUserId());
 			if (!userEntity.isPresent()){
 				logger.info("User does not exists with UserName: "+userBean.getUserName());
-				throw  new FmkException("U1001", Errors.getValue("U1001", new String[]{userBean.getUserName()}));
+				throw  new FmkException("U1001",  "Invalid user Id: "+ String.valueOf( userBean.getUserId()));
 			}
 			userEntity.get().setUserId(userBean.getUserId());
 			userEntity.get().setUserEmail(userBean.getUserEmail());
@@ -92,11 +92,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserBean getUserByIdOrUserName(String userName) throws FmkException {
 		if (userName == null){
-			throw  new FmkException("U1001", Errors.getValue("U1001", new String[]{userName}));
+			throw  new FmkException("U1001", "Invalid userame: "+ userName);
 		}
 		UserEntity userEntity = userRepository.findByUserName(userName).get();
 		if (userEntity== null){
-			throw  new FmkException("U1001", Errors.getValue("U1001", new String[]{userName}));
+			throw  new FmkException("U1001",  "Invalid userame: "+ userName);
 		}else {
 			UserBean userBean = new UserBean();
 			BeanUtils.copyProperties(userEntity,userBean);
@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
 	public String deleteUserById(int id) throws FmkException {
 		if (id == 0){
 			logger.info("Invalid user ID: "+id);
-			throw  new FmkException("U1002", Errors.getValue("U1002", new String[]{String.valueOf(id)}));
+			throw  new FmkException("U1002","Invalid user Id: "+ String.valueOf(id));
 		}
 		userRepository.deleteById(id);
 		return "User deleted successfully..";
@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService {
 			Optional<UserEntity> userEntity = userRepository.findById(id);
 			if (!userEntity.isPresent()){
 				logger.info("Invalid user ID: "+id);
-				throw  new FmkException("U1002", Errors.getValue("U1002", new String[]{String.valueOf(id)}));
+				throw  new FmkException("U1002", "Invalid user Id: "+ String.valueOf(id));
 			}
 			userEntity.get().setIsActive(activate);
 			userRepository.save(userEntity.get());
@@ -144,11 +144,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserBean getUserById(int id) throws FmkException {
 		if (id == 0){
-			throw  new FmkException("U1001", Errors.getValue("U1001", new String[]{String.valueOf(id)}));
+			throw  new FmkException("U1002", "Invalid user Id: "+ String.valueOf(id));
 		}
 		UserEntity userEntity = userRepository.findById(id).get();
 		if (userEntity== null){
-			throw  new FmkException("U1001", Errors.getValue("U1001", new String[]{String.valueOf(id)}));
+			throw  new FmkException("U1002", "Invalid user Id: "+ String.valueOf(id));
 		}else {
 			UserBean userBean = new UserBean();
 			BeanUtils.copyProperties(userEntity,userBean);
@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
 			UserEntity userEntity = userRepository.findByMobileNo(passwordBean.getMobile());
 			if (userEntity==null){
 				logger.info("Incorret mobile number: "+passwordBean.getMobile());
-				throw  new FmkException("U1003", Errors.getValue("U1003", new String[]{passwordBean.getMobile()}));
+				throw  new FmkException("U1006", "Incorret mobile number: "+passwordBean.getMobile());
 			}
 			if (passwordBean.getNewPassword().matches(passwordBean.getConfirmPassword())){
 				userEntity.setUserPassword(encoder.encode(passwordBean.getNewPassword()));
@@ -170,7 +170,7 @@ public class UserServiceImpl implements UserService {
 				return "Password updated successfully!";
 			}else {
 				logger.info("password mismatched");
-				throw  new FmkException("U1004", Errors.getValue("U1004", new String[]{passwordBean.getMobile()}));
+				throw  new FmkException("U1004", "confirm password mismatched");
 			}
 
 		}
@@ -183,11 +183,11 @@ public class UserServiceImpl implements UserService {
 			Optional<UserEntity> userEntity = userRepository.findById(passwordBean.getUserId());
 			if (!userEntity.isPresent()){
 				logger.info("Invalid user Id: "+ passwordBean.getUserId());
-				throw  new FmkException("U1002", Errors.getValue("U1002", new String[]{passwordBean.getMobile()}));
+				throw  new FmkException("U1002", "Invalid user Id: "+ passwordBean.getUserId());
 			}
-			if (!userEntity.get().getUserPassword().matches(passwordBean.getOldPassword())){
+			if (!encoder.matches(passwordBean.getOldPassword(),userEntity.get().getUserPassword())){
 				logger.info("Incorrect old password");
-				throw  new FmkException("U1004", Errors.getValue("U1004", new String[]{passwordBean.getMobile()}));
+				throw  new FmkException("U1004", "Incorrect old password");
 			}
 			if (passwordBean.getNewPassword().matches(passwordBean.getConfirmPassword())){
 				userEntity.get().setUserPassword(encoder.encode(passwordBean.getNewPassword()));
@@ -197,7 +197,7 @@ public class UserServiceImpl implements UserService {
 				return userBean;
 			}else {
 				logger.info("password mismatched");
-				throw  new FmkException("U1004", Errors.getValue("U1004", new String[]{passwordBean.getMobile()}));
+				throw  new FmkException("U1005", "confirm password mismatched");
 			}
 
 		}

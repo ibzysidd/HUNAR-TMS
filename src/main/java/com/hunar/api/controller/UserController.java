@@ -87,7 +87,7 @@ public class UserController {
     }
 
     @PostMapping("/changePassword")
-    public UserBean changePassword(PasswordBean passwordBean) throws FmkException {
+    public UserBean changePassword(@RequestBody PasswordBean passwordBean) throws FmkException {
         return userService.changePassword(passwordBean);
     }
 
