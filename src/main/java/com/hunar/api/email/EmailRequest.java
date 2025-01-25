@@ -2,19 +2,10 @@ package com.hunar.api.email;
 
 
 public class EmailRequest {
-	private Long id;
 	private String name;
 	private String to;
 	private String from;
 	private String subject;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public String getName() {
 		return name;

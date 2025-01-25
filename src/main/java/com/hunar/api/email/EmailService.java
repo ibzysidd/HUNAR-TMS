@@ -5,17 +5,21 @@ import java.util.Map;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.InternetAddress;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
+@EnableAsync
 @Service
 public class EmailService {
 
@@ -29,7 +33,8 @@ public class EmailService {
 	private String senderEmail;
 	
 
-	public EmailResponse sendEmail(EmailRequest request, Map<String, Object> model) {
+	@Async
+	public void sendEmail(EmailRequest request, Map<String, Object> model) {
 		EmailResponse response = new EmailResponse();
 		MimeMessage message = sender.createMimeMessage();
 		
@@ -40,7 +45,7 @@ public class EmailService {
 
 			helper.setTo(request.getTo());
 			helper.setText(html, true);
-			helper.setSubject("Booking Confirmation.");
+			helper.setSubject("Order Confirmation.");
 			helper.setFrom(senderEmail);
 			sender.send(message);
 			response.setMessage("mail send to : " + request.getTo());
@@ -51,7 +56,7 @@ public class EmailService {
 			response.setStatus(Boolean.FALSE);
 		}
 
-		return response;
+//		return response;
 	}
 
 }

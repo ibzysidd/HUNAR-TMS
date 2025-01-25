@@ -24,7 +24,7 @@ public class MeasurementController {
     }
 
     @PostMapping(value = "updateMeasurment")
-    public TypeMeasurementBean updateMeasurment(@RequestBody TypeMeasurementBean measurementBean){
+    public TypeMeasurementBean updateMeasurment(@RequestBody TypeMeasurementBean measurementBean) throws FmkException {
         return measurementService.updateMeasurment(measurementBean);
     }
 
@@ -32,11 +32,11 @@ public class MeasurementController {
     public List<TypeMeasurementBean> getAllMeasurements(@RequestParam(required = false) int idCustomer){
         return  measurementService.getAllMeasurements(idCustomer);
     }
-//
-//    @GetMapping(value = "/getMeasurementsByCustomerId/{idCustomer}")
-//    public List<MeasurementBean> getMeasurementsByCustomerId(@Pa){
-//        return  measurementService.getMeasurementsByCustomerId();
-//    }
+
+    @GetMapping(value = "/getMeasurementById/{idTypeMeasure}")
+    public TypeMeasurementBean getMeasurementById(@PathVariable("idTypeMeasure") int idTypeMeasure){
+        return  measurementService.getMeasurementById(idTypeMeasure);
+    }
 
     @DeleteMapping(value = "/deleteMeasurementById/{id}")
     public String deleteMeasurementById(@PathVariable("id") int id){
