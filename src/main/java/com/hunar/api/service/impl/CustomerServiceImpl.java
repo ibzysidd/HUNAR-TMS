@@ -65,6 +65,7 @@ public class CustomerServiceImpl implements CustomerService {
             customerEntity.get().setMobileNo(customerBean.getMobileNo());
             customerEntity.get().setGender(customerBean.getGender());
             customerEntity.get().setCustomerName(customerBean.getCustomerName());
+            customerEntity.get().setCustomerName(customerBean.getAddress());
            CustomerEntity customerEntity1 = customerRepository.save(customerEntity.get());
             logger.info("Updated customer successfully: " + customerBean.getCustomerName());
             CustomerBean customerBean1 = new CustomerBean();
@@ -83,7 +84,7 @@ public class CustomerServiceImpl implements CustomerService {
             for (CustomerEntity customerEntity : listOfAllCustomersEntity){
                 CustomerBean customerBean = new CustomerBean();
                 BeanUtils.copyProperties(customerEntity,customerBean);
-                customerBean.setAddressBeans(addressService.getListOfAllAddresssByCustomerId(customerEntity.getCustomerId()));
+//                customerBean.setAddressBeans(addressService.getListOfAllAddresssByCustomerId(customerEntity.getCustomerId()));
                 customerBean.setOrderBeans(orderService.getListOfAllOrdersByCustomerId(customerEntity.getCustomerId()));
                 listOfAllCustomersBean.add(customerBean);
             }
