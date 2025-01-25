@@ -82,4 +82,13 @@ public class OrderController {
         return null;
     }
 
+    @PostMapping(value = "/orderAlteration/{idOrder}/{alterComments}")
+    public OrderBean orderAlteration(@PathVariable("idOrder") int idOrder, @PathVariable("alterComments") String alterComments) throws FmkException{
+        if (idOrder>0 && alterComments!= null){
+            return orderService.orderAlteration(idOrder,alterComments);
+        }else {
+            throw  new FmkException("OR1008","Please provide the required inputs");
+        }
+    }
+
 }

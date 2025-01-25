@@ -30,65 +30,72 @@ public class Order extends GenericEntity {
 
     private int quantity;
 
-    private String dart_point;
+    private String customerName;
 
-    private String waist_length;
-
-    private  String length_of_shirt;
-
-    private String upper_bust;
-
-    private String bust;
-
-    private String belly;
-
-    private String waist;
-
-    private String hip;
-
-    private String shoulders;
-
-    private String sleeves_length_width;
-
-
-    private String arm_hole;
-
-    private String biceps;
-
-    private String length_of_pant;
-
-    private String waist_of_pants;
-
-
-    private String thighs;
-
-    private String calfs;
-
-    private String knees;
-
-    private String round_bottom;
+    private String alterComments;
+//    private String dart_point;
+//
+//    private String waist_length;
+//
+//    private  String length_of_shirt;
+//
+//    private String upper_bust;
+//
+//    private String bust;
+//
+//    private String belly;
+//
+//    private String waist;
+//
+//    private String hip;
+//
+//    private String shoulders;
+//
+//    private String sleeves_length_width;
+//
+//
+//    private String arm_hole;
+//
+//    private String biceps;
+//
+//    private String length_of_pant;
+//
+//    private String waist_of_pants;
+//
+//
+//    private String thighs;
+//
+//    private String calfs;
+//
+//    private String knees;
+//
+//    private String round_bottom;
 
     private  String orderStatus;
 
 //    @Lob
 //    private byte[] image;
 
-    @Column(name = "ID_ADDRESS", insertable = false,updatable = false)
-    private int idAddress;
+//    @Column(name = "ID_ADDRESS", insertable = false,updatable = false)
+//    private int idAddress;
 
     @Column(name = "ID_CUSTOMER", insertable = false,updatable = false)
     private int idCustomer;
 
-    @OneToOne
-    @JoinColumn(name = "ID_ADDRESS")
-    private  Address address;
+//    @OneToOne
+//    @JoinColumn(name = "ID_ADDRESS")
+//    private  Address address;
 
     @ManyToOne
     @JoinColumn(name = "ID_CUSTOMER")
     private CustomerEntity customer;
 
-    public Order() {
-        super();
+    public String getAlterComments() {
+        return alterComments;
+    }
+
+    public void setAlterComments(String alterComments) {
+        this.alterComments = alterComments;
     }
 
     public int getOrderId() {
@@ -163,164 +170,12 @@ public class Order extends GenericEntity {
         this.quantity = quantity;
     }
 
-    public String getDart_point() {
-        return dart_point;
-    }
-
-    public void setDart_point(String dart_point) {
-        this.dart_point = dart_point;
-    }
-
-    public String getWaist_length() {
-        return waist_length;
-    }
-
-    public void setWaist_length(String waist_length) {
-        this.waist_length = waist_length;
-    }
-
-    public String getLength_of_shirt() {
-        return length_of_shirt;
-    }
-
-    public void setLength_of_shirt(String length_of_shirt) {
-        this.length_of_shirt = length_of_shirt;
-    }
-
-    public String getUpper_bust() {
-        return upper_bust;
-    }
-
-    public void setUpper_bust(String upper_bust) {
-        this.upper_bust = upper_bust;
-    }
-
-    public String getBust() {
-        return bust;
-    }
-
-    public void setBust(String bust) {
-        this.bust = bust;
-    }
-
-    public String getBelly() {
-        return belly;
-    }
-
-    public void setBelly(String belly) {
-        this.belly = belly;
-    }
-
-    public String getWaist() {
-        return waist;
-    }
-
-    public void setWaist(String waist) {
-        this.waist = waist;
-    }
-
-    public String getHip() {
-        return hip;
-    }
-
-    public void setHip(String hip) {
-        this.hip = hip;
-    }
-
-    public String getShoulders() {
-        return shoulders;
-    }
-
-    public void setShoulders(String shoulders) {
-        this.shoulders = shoulders;
-    }
-
-    public String getSleeves_length_width() {
-        return sleeves_length_width;
-    }
-
-    public void setSleeves_length_width(String sleeves_length_width) {
-        this.sleeves_length_width = sleeves_length_width;
-    }
-
-    public String getArm_hole() {
-        return arm_hole;
-    }
-
-    public void setArm_hole(String arm_hole) {
-        this.arm_hole = arm_hole;
-    }
-
-    public String getBiceps() {
-        return biceps;
-    }
-
-    public void setBiceps(String biceps) {
-        this.biceps = biceps;
-    }
-
-    public String getLength_of_pant() {
-        return length_of_pant;
-    }
-
-    public void setLength_of_pant(String length_of_pant) {
-        this.length_of_pant = length_of_pant;
-    }
-
-    public String getWaist_of_pants() {
-        return waist_of_pants;
-    }
-
-    public void setWaist_of_pants(String waist_of_pants) {
-        this.waist_of_pants = waist_of_pants;
-    }
-
-    public String getThighs() {
-        return thighs;
-    }
-
-    public void setThighs(String thighs) {
-        this.thighs = thighs;
-    }
-
-    public String getCalfs() {
-        return calfs;
-    }
-
-    public void setCalfs(String calfs) {
-        this.calfs = calfs;
-    }
-
-    public String getKnees() {
-        return knees;
-    }
-
-    public void setKnees(String knees) {
-        this.knees = knees;
-    }
-
-    public String getRound_bottom() {
-        return round_bottom;
-    }
-
-    public void setRound_bottom(String round_bottom) {
-        this.round_bottom = round_bottom;
-    }
-
     public String getOrderStatus() {
         return orderStatus;
     }
 
     public void setOrderStatus(String orderStatus) {
         this.orderStatus = orderStatus;
-    }
-
-    public int getIdAddress() {
-        return idAddress;
-    }
-
-    public void setIdAddress(int idAddress) {
-        this.idAddress = idAddress;
     }
 
     public int getIdCustomer() {
@@ -331,14 +186,6 @@ public class Order extends GenericEntity {
         this.idCustomer = idCustomer;
     }
 
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
     public CustomerEntity getCustomer() {
         return customer;
     }
@@ -347,4 +194,11 @@ public class Order extends GenericEntity {
         this.customer = customer;
     }
 
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
 }

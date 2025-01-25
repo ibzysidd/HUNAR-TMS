@@ -41,6 +41,5 @@ public class Constants {
 	public static final String DELIVERED = "Delivered";
 
 
-
-
+    public static final String ALTERATION = "Alteration";
 }

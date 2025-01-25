@@ -26,26 +26,17 @@ public class EmailController {
 	
 	@PostMapping("/email")
 	public EmailResponse sendEmail(@RequestBody EmailRequest request) {
-//		CustomerEntity cEntity = repo.findById(1).get();
 		Map<String, Object> model = new HashMap<>();
-//		model.put("name", cEntity.getCustomerName());
-//		model.put("to",cEntity.getCustomerEmail());
-//		model.put("date", new Date().toString());
-//		model.put("bookingID", String.valueOf(cEntity.getCustomerId()));
-//		model.put("sdate", cEntity.getCreatedBy().toString());
-//		model.put("edate", cEntity.getLastModifiedDate().toString());
-//		model.put("rooms", cEntity.getMobileNo());
-//		model.put("halls", cEntity.getCreatedBy());
 		model.put("name", "IBRAHIM SIDDIQUI");
 		model.put("to","ibzysidd@gmail.com");
 		model.put("date", new Date().toString());
-		model.put("bookingID", "ORD-121213");
+		model.put("orderNo", "ORD-121213");
 		model.put("sdate", LocalDate.now().toString());
 		model.put("edate", LocalDate.now().toString());
-		model.put("rooms", "15");
-		model.put("halls", "10");
-		System.out.println("Your APIs request count : "+count);
-		count++;
-		return service.sendEmail(request, model);
+		model.put("items", "Shirt, Pant");
+		model.put("mobile", "9015316599");
+//		return service.sendEmail(request, model);
+		return  null;
 	}
+
 }

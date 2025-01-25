@@ -9,9 +9,11 @@ import java.util.List;
 public interface MeasurementService {
     public TypeMeasurementBean createMeasurement(TypeMeasurementBean measurementBean) throws FmkException;
 
-    public TypeMeasurementBean updateMeasurment(TypeMeasurementBean measurementBean);
+    public TypeMeasurementBean updateMeasurment(TypeMeasurementBean measurementBean) throws FmkException;
 
     public List<TypeMeasurementBean> getAllMeasurements(int idCustomer);
 
     public String deleteMeasurementById(int id);
+
+    TypeMeasurementBean getMeasurementById(int idTypeMeasure);
 }

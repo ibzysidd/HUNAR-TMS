@@ -87,10 +87,10 @@
           <div class="border-r">
             <div class="bg-color py-3">
               <span class="asdc text-white text-center"
-                >Your Booking has been confirmed</span
+                >Your Order has been confirmed</span
               >
               <span class="asdc text-white text-center"
-                >Your Booking id: <span class="font-weight-bold">${bookingID}</span>
+                >Your Order No: <span class="font-weight-bold">${orderNo}</span>
               </span>
             </div>
             <div class="been-sat pl-3 py-4">
@@ -110,16 +110,14 @@
               <ul class="ibrahim">
                 <li><strong>Name : </strong> ${name}</li>
                 <li><strong>Email : </strong> ${to}</li>
-                <li><strong>Booking Start Date :</strong>${sdate}</li>
-                 <li><strong>Booking End Date :</strong>${edate}</li>
-                <li><strong>Booked Rooms :</strong> ${rooms}</li>
-                <li><strong>Booked Halls :</strong> ${halls}</li>
+                <li><strong>Order Date :</strong>${sdate}</li>
+                 <li><strong>Delivery Date :</strong>${edate}</li>
+                <li><strong>Ordered Items :</strong> ${items}</li>
               </ul>
               <div class="receive-your">
                 <p class="m-0">
-                  You will receive your password to login.Once your request
-                  get's approved by
-                  <span style="background-color: #ad7e32">Admin</span>
+                  For any further query please contact us on
+                  <span style="background-color: #ad7e32">${mobile}</span>
                 </p>
               </div>
             </div>

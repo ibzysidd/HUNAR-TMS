@@ -3,34 +3,24 @@ package com.hunar.api.service.impl;
 import com.hunar.api.bean.CustomerBean;
 import com.hunar.api.bean.InvoiceBean;
 import com.hunar.api.bean.OrderBean;
+import com.hunar.api.bean.TypeMeasurementBean;
 import com.hunar.api.constant.Constants;
-import com.hunar.api.entity.Address;
-import com.hunar.api.entity.CompanyEntity;
-import com.hunar.api.entity.CustomerEntity;
-import com.hunar.api.entity.Order;
-import com.hunar.api.exceptionHandling.util.Errors;
+import com.hunar.api.email.EmailRequest;
+import com.hunar.api.email.EmailResponse;
+import com.hunar.api.email.EmailService;
+import com.hunar.api.entity.*;
 import com.hunar.api.exceptionHandling.util.FmkException;
-import com.hunar.api.repository.AddressRepository;
-import com.hunar.api.repository.CompanyRepository;
-import com.hunar.api.repository.CustomerRepository;
-import com.hunar.api.repository.OrderRepository;
-import com.hunar.api.service.CustomerService;
+import com.hunar.api.repository.*;
+import com.hunar.api.service.MeasurementService;
 import com.hunar.api.service.OrderService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
-import org.springframework.core.Ordered;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
@@ -55,8 +45,21 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     CustomerRepository customerRepository;
 
-//    @Value("${upload.dir}")
+    @Autowired
+    BookingMeasureMappingRepository bmmRepo;
+
+    @Autowired
+    MeasurementService measurementService;
+
+    @Autowired
+    EmailService emailService;
+
+
+    //    @Value("${upload.dir}")
     private String uploadDir;
+
+    @Value("${company.mobile.number}")
+    private String companyMobileNo;
 
     @Override
     public OrderBean createOrder(OrderBean orderBean) throws FmkException, IOException {
@@ -64,12 +67,11 @@ public class OrderServiceImpl implements OrderService {
         Order orderEntity = new Order();
         BeanUtils.copyProperties(orderBean, orderEntity);
         orderEntity.setOrderNo(generateOrderNumber());
-        orderEntity.setIdAddress(orderBean.getIdAddress());
-        Address address = checkByAddressId(orderBean.getIdAddress());
         CustomerEntity customer = checkByCustomerId(orderBean.getIdCustomer());
         orderEntity.setCustomer(customer);
-        orderEntity.setAddress(address);
+        orderEntity.setBookingDate(LocalDate.now());
         orderEntity.setIdCustomer(orderBean.getIdCustomer());
+        orderEntity.setCustomerName(customer.getCustomerName());
 
         // If there is an image file, store it
 //        MultipartFile imageFile = orderBean.getImage();
@@ -80,10 +82,55 @@ public class OrderServiceImpl implements OrderService {
 
         orderEntity.setOrderStatus(Constants.IN_PROGRESS);
        orderEntity= orderRepository.save(orderEntity);
+      List<TypeMeasurementBean> typeMeasurementBeans = createMapping(orderEntity,orderBean);
         logger.info("Created new order successfully: " + orderBean.toString());
         OrderBean orderBean1 = new OrderBean();
         BeanUtils.copyProperties(orderEntity,orderBean1);
+        orderBean1.setTypeMeasurementBeans(typeMeasurementBeans);
+        orderBean1.setCustomerName(orderEntity.getCustomerName());
+
+        //sending email to customer
+        sendEmail(orderBean1);
         return  orderBean1;
+    }
+
+    private void sendEmail(OrderBean orderBean1) {
+        CustomerEntity customerEntity = customerRepository.findById(orderBean1.getIdCustomer()).get();
+       StringJoiner items = new StringJoiner(",");
+        for (TypeMeasurementBean typeMeasurement: orderBean1.getTypeMeasurementBeans()){
+            items.add(typeMeasurement.getTypeName());
+        }
+        EmailRequest request = new EmailRequest();
+        request.setTo(customerEntity.getCustomerEmail());
+        Map<String, Object> model = new HashMap<>();
+        model.put("name", orderBean1.getCustomerName());
+        model.put("to",customerEntity.getCustomerEmail());
+        model.put("date", new Date().toString());
+        model.put("orderNo", orderBean1.getOrderNo());
+        model.put("sdate", orderBean1.getBookingDate().toString());
+        model.put("edate", orderBean1.getDeliveryDate().toString());
+        model.put("items", items);
+        model.put("mobile", companyMobileNo);
+         emailService.sendEmail(request, model);
+
+    }
+
+
+    private List<TypeMeasurementBean> createMapping(Order orderEntity, OrderBean orderBean) {
+        bmmRepo.deleteAllByIdOrder(orderEntity.getOrderId());
+        List<TypeMeasurementBean> typeMeasurementBeanList = new ArrayList<>();
+        if (!orderBean.getIdMeasurements().isEmpty()){
+            for (Integer idMeasure : orderBean.getIdMeasurements()){
+                BookingMeasuremntMapping bmmEntity = new BookingMeasuremntMapping();
+                bmmEntity.setIdOrder(orderEntity.getOrderId());
+                bmmEntity.setIdTypeMeasurement(idMeasure);
+                bmmRepo.save(bmmEntity);
+                logger.info("Data save in mapping table");
+                typeMeasurementBeanList.add(measurementService.getMeasurementById(idMeasure));
+            }
+        }
+
+        return  typeMeasurementBeanList;
     }
 
 //    private String storeImage(MultipartFile file) throws IOException {
@@ -156,32 +203,17 @@ public class OrderServiceImpl implements OrderService {
             orderEntity.get().setComments(orderBean.getComments());
             orderEntity.get().setDeliveryDate(orderBean.getDeliveryDate());
             orderEntity.get().setQuantity(orderBean.getQuantity());
-            orderEntity.get().setWaist(orderBean.getWaist());
-            orderEntity.get().setType(orderBean.getType());
-            orderEntity.get().setShoulders(orderBean.getShoulders());
-            orderEntity.get().setArm_hole(orderBean.getArm_hole());
-            orderEntity.get().setBelly(orderBean.getBelly());
-            orderEntity.get().setBiceps(orderBean.getBiceps());
-            orderEntity.get().setBust(orderBean.getBust());
-            orderEntity.get().setCalfs(orderBean.getCalfs());
-            orderEntity.get().setDart_point(orderBean.getDart_point());
-            orderEntity.get().setHip(orderBean.getHip());
-            orderEntity.get().setKnees(orderBean.getKnees());
-            orderEntity.get().setLength_of_pant(orderBean.getLength_of_pant());
-            orderEntity.get().setLength_of_shirt(orderBean.getLength_of_shirt());
-            orderEntity.get().setRound_bottom(orderBean.getRound_bottom());
-            orderEntity.get().setSleeves_length_width(orderBean.getSleeves_length_width());
-            orderEntity.get().setThighs(orderBean.getThighs());
-            orderEntity.get().setUpper_bust(orderBean.getUpper_bust());
-            orderEntity.get().setWaist_length(orderBean.getWaist_length());
-            orderEntity.get().setWaist_of_pants(orderBean.getWaist_of_pants());
+//            orderEntity.get().setType(orderBean.getType());
             orderEntity.get().setIdCustomer(orderBean.getIdCustomer());
-            orderEntity.get().setIdAddress(orderBean.getIdAddress());
-            orderEntity.get().setOrderStatus(Constants.CREATED);
+            orderEntity.get().setOrderStatus(orderEntity.get().getOrderStatus());
+//            CustomerEntity customer = checkByCustomerId(orderBean.getIdCustomer());
            Order order = orderRepository.save(orderEntity.get());
             logger.info("Updated order successfully: " + order.getOrderId());
+            List<TypeMeasurementBean> typeMeasurementBeans = createMapping(order,orderBean);
             OrderBean orderBean1 = new OrderBean();
             BeanUtils.copyProperties(order,orderBean1);
+            orderBean1.setTypeMeasurementBeans(typeMeasurementBeans);
+            orderBean1.setCustomerName(order.getCustomerName());
             return orderBean1;
         }
         return null;
@@ -197,6 +229,10 @@ public class OrderServiceImpl implements OrderService {
             for (Order orderEntity : listOfAllOrdersEntity) {
                 OrderBean orderBean = new OrderBean();
                 BeanUtils.copyProperties(orderEntity, orderBean);
+//                CustomerEntity customer = checkByCustomerId(orderEntity.getIdCustomer());
+//                orderBean.setCustomerName(customer.getCustomerName());
+                List<TypeMeasurementBean> typeMeasurementBeans = getTypeMeasurementByOrderId(orderEntity.getOrderId());
+               orderBean.setTypeMeasurementBeans(typeMeasurementBeans);
                 listOfAllOrdersBean.add(orderBean);
             }
             return listOfAllOrdersBean;
@@ -205,6 +241,18 @@ public class OrderServiceImpl implements OrderService {
             return new ArrayList<>();
         }
 
+    }
+
+    private List<TypeMeasurementBean> getTypeMeasurementByOrderId(int orderId) {
+        List<BookingMeasuremntMapping> bmmEntity = bmmRepo.findAllByIdOrder(orderId);
+        List<TypeMeasurementBean> typeMeasurementBeanList = new ArrayList<>();
+        if (!bmmEntity.isEmpty()){
+            for (BookingMeasuremntMapping bookingMeasuremntMapping : bmmEntity){
+               TypeMeasurementBean typeMeasurementBean= measurementService.getMeasurementById(bookingMeasuremntMapping.getIdTypeMeasurement());
+               typeMeasurementBeanList.add(typeMeasurementBean);
+            }
+        }
+        return typeMeasurementBeanList;
     }
 
     @Override
@@ -228,6 +276,7 @@ public class OrderServiceImpl implements OrderService {
             logger.info("Invalid order ID: " + idOrder);
             throw new FmkException("O1002", "Invalid order ID: " + String.valueOf(idOrder));
         }
+        bmmRepo.deleteAllByIdOrder(idOrder);
         orderRepository.deleteById(idOrder);
         return "Order deleted succesffuly";
     }
@@ -269,6 +318,10 @@ public class OrderServiceImpl implements OrderService {
             for (Order orderEntity : listOfAllOrdersEntity) {
                 OrderBean orderBean = new OrderBean();
                 BeanUtils.copyProperties(orderEntity, orderBean);
+//                CustomerEntity customer = checkByCustomerId(orderEntity.getIdCustomer());
+//                orderBean.setCustomerName(customer.getCustomerName());
+                List<TypeMeasurementBean> typeMeasurementBeans = getTypeMeasurementByOrderId(orderEntity.getOrderId());
+                orderBean.setTypeMeasurementBeans(typeMeasurementBeans);
                 listOfAllOrdersBean.add(orderBean);
             }
             return listOfAllOrdersBean;
@@ -328,6 +381,20 @@ public class OrderServiceImpl implements OrderService {
         Optional<Order> order = orderRepository.findById(idOrder);
         if (order.isPresent()){
             order.get().setOrderStatus(Constants.COMPLETED);
+            Order order1 = orderRepository.save(order.get());
+            OrderBean orderBean = new OrderBean();
+            BeanUtils.copyProperties(order1, orderBean);
+            return  orderBean;
+        }
+        return  null;
+    }
+
+    @Override
+    public OrderBean orderAlteration(int idOrder, String alterComments) {
+        Optional<Order> order = orderRepository.findById(idOrder);
+        if (order.isPresent()){
+            order.get().setOrderStatus(Constants.ALTERATION);
+            order.get().setAlterComments(alterComments);
             Order order1 = orderRepository.save(order.get());
             OrderBean orderBean = new OrderBean();
             BeanUtils.copyProperties(order1, orderBean);

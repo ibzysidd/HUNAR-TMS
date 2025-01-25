@@ -20,4 +20,6 @@ public interface OrderService {
     InvoiceBean getInvoiceDetails(String orderNo);
     OrderBean orderDelivered(int idCustomer);
     OrderBean orderCompleted(int idCustomer);
+
+    OrderBean orderAlteration(int idOrder, String alterComments);
 }

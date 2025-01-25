@@ -4,6 +4,8 @@ import com.hunar.api.generic.bean.GenericBean;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrderBean extends GenericBean {
 
@@ -25,52 +27,30 @@ public class OrderBean extends GenericBean {
 
 
     private int quantity;
-    
-    private String dart_point;
-
-    private String waist_length;
-
-    private  String length_of_shirt;
-
-    private String upper_bust;
-
-    private String bust;
-
-    private String belly;
-
-    private String waist;
-
-    private String hip;
-
-    private String shoulders;
-
-    private String sleeves_length_width;
-
-
-    private String arm_hole;
-
-    private String biceps;
-
-    private String length_of_pant;
-
-    private String waist_of_pants;
-
-
-    private String thighs;
-
-    private String calfs;
-
-    private String knees;
-
-    private String round_bottom;
-
-    private int idAddress;
 
     private int idCustomer;
 
+    private String customerName;
+
     private  String orderStatus;
 
+    List<Integer> idMeasurements = new ArrayList<>();
+
+    private String alterComments;
+
+    private List<TypeMeasurementBean> typeMeasurementBeans = new ArrayList<>();
+
+
 //    private MultipartFile image;
+
+
+    public String getAlterComments() {
+        return alterComments;
+    }
+
+    public void setAlterComments(String alterComments) {
+        this.alterComments = alterComments;
+    }
 
     public int getOrderId() {
         return orderId;
@@ -78,6 +58,14 @@ public class OrderBean extends GenericBean {
 
     public void setOrderId(int orderId) {
         this.orderId = orderId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
     public String getOrderNo() {
@@ -144,158 +132,6 @@ public class OrderBean extends GenericBean {
         this.quantity = quantity;
     }
 
-    public String getDart_point() {
-        return dart_point;
-    }
-
-    public void setDart_point(String dart_point) {
-        this.dart_point = dart_point;
-    }
-
-    public String getWaist_length() {
-        return waist_length;
-    }
-
-    public void setWaist_length(String waist_length) {
-        this.waist_length = waist_length;
-    }
-
-    public String getLength_of_shirt() {
-        return length_of_shirt;
-    }
-
-    public void setLength_of_shirt(String length_of_shirt) {
-        this.length_of_shirt = length_of_shirt;
-    }
-
-    public String getUpper_bust() {
-        return upper_bust;
-    }
-
-    public void setUpper_bust(String upper_bust) {
-        this.upper_bust = upper_bust;
-    }
-
-    public String getBust() {
-        return bust;
-    }
-
-    public void setBust(String bust) {
-        this.bust = bust;
-    }
-
-    public String getBelly() {
-        return belly;
-    }
-
-    public void setBelly(String belly) {
-        this.belly = belly;
-    }
-
-    public String getWaist() {
-        return waist;
-    }
-
-    public void setWaist(String waist) {
-        this.waist = waist;
-    }
-
-    public String getHip() {
-        return hip;
-    }
-
-    public void setHip(String hip) {
-        this.hip = hip;
-    }
-
-    public String getShoulders() {
-        return shoulders;
-    }
-
-    public void setShoulders(String shoulders) {
-        this.shoulders = shoulders;
-    }
-
-    public String getSleeves_length_width() {
-        return sleeves_length_width;
-    }
-
-    public void setSleeves_length_width(String sleeves_length_width) {
-        this.sleeves_length_width = sleeves_length_width;
-    }
-
-    public String getArm_hole() {
-        return arm_hole;
-    }
-
-    public void setArm_hole(String arm_hole) {
-        this.arm_hole = arm_hole;
-    }
-
-    public String getBiceps() {
-        return biceps;
-    }
-
-    public void setBiceps(String biceps) {
-        this.biceps = biceps;
-    }
-
-    public String getLength_of_pant() {
-        return length_of_pant;
-    }
-
-    public void setLength_of_pant(String length_of_pant) {
-        this.length_of_pant = length_of_pant;
-    }
-
-    public String getWaist_of_pants() {
-        return waist_of_pants;
-    }
-
-    public void setWaist_of_pants(String waist_of_pants) {
-        this.waist_of_pants = waist_of_pants;
-    }
-
-    public String getThighs() {
-        return thighs;
-    }
-
-    public void setThighs(String thighs) {
-        this.thighs = thighs;
-    }
-
-    public String getCalfs() {
-        return calfs;
-    }
-
-    public void setCalfs(String calfs) {
-        this.calfs = calfs;
-    }
-
-    public String getKnees() {
-        return knees;
-    }
-
-    public void setKnees(String knees) {
-        this.knees = knees;
-    }
-
-    public String getRound_bottom() {
-        return round_bottom;
-    }
-
-    public void setRound_bottom(String round_bottom) {
-        this.round_bottom = round_bottom;
-    }
-
-    public int getIdAddress() {
-        return idAddress;
-    }
-
-    public void setIdAddress(int idAddress) {
-        this.idAddress = idAddress;
-    }
-
     public int getIdCustomer() {
         return idCustomer;
     }
@@ -312,4 +148,19 @@ public class OrderBean extends GenericBean {
         this.orderStatus = orderStatus;
     }
 
+    public List<Integer> getIdMeasurements() {
+        return idMeasurements;
+    }
+
+    public void setIdMeasurements(List<Integer> idMeasurements) {
+        this.idMeasurements = idMeasurements;
+    }
+
+    public List<TypeMeasurementBean> getTypeMeasurementBeans() {
+        return typeMeasurementBeans;
+    }
+
+    public void setTypeMeasurementBeans(List<TypeMeasurementBean> typeMeasurementBeans) {
+        this.typeMeasurementBeans = typeMeasurementBeans;
+    }
 }

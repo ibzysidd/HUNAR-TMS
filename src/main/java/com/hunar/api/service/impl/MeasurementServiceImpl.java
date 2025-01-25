@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MeasurementServiceImpl implements MeasurementService {
@@ -62,20 +63,54 @@ public class MeasurementServiceImpl implements MeasurementService {
         if (measurements.isEmpty()){
             throw new FmkException("TM1003", "measurements are not present");
         }
-
+//        List<Measurement> measurementList = measurementRepository.findAllByIdTypeMeasure(idType);
         for (MeasurementBean measurementBean : measurements){
-            Measurement measurement = new Measurement();
-            measurement.setIdTypeMeasure(idType);
-            measurement.setField(measurementBean.getField());
-            measurement.setValue(measurementBean.getValue());
-            measurementRepository.save(measurement);
-           logger.info("measurement saved for field: "+measurement.getField()+" and value: "+measurement.getValue());
+            Measurement measurementExists = measurementRepository.findByFieldAndIdTypeMeasure(measurementBean.getField(),idType);
+           if (measurementExists!=null){
+               //update measurements
+               measurementExists.setValue(measurementBean.getValue());
+               measurementRepository.save(measurementExists);
+               logger.info("updated measurment for: "+measurementExists.getField());
+           }else {
+               //create measurement
+               Measurement measurement = new Measurement();
+               measurement.setIdTypeMeasure(idType);
+               measurement.setField(measurementBean.getField());
+               measurement.setValue(measurementBean.getValue());
+               measurementRepository.save(measurement);
+               logger.info("measurement saved for field: "+measurement.getField()+" and value: "+measurement.getValue());
+           }
+
         }
         return measurements;
     }
 
     @Override
-    public TypeMeasurementBean updateMeasurment(TypeMeasurementBean measurementBean) {
+    public TypeMeasurementBean updateMeasurment(TypeMeasurementBean measurementBean) throws FmkException {
+       logger.info("update method calling: "+measurementBean.getTypeName());
+        if (measurementBean!=null && measurementBean.getIdTypeMeasure() !=0 && measurementBean.getIdCustomer()>0){
+            Optional<TypeMeasurement> typeMeasurement = tmRepo.findById(measurementBean.getIdTypeMeasure());
+//                    findByTypeNameAndIdCustomer(measurementBean.getTypeName(), measurementBean.getIdCustomer());
+            if (!typeMeasurement.isPresent()){
+                throw new FmkException("TM1004", "Measurement type "+ measurementBean.getTypeName() + " not exists");
+            }
+
+            TypeMeasurement typeMeasure = typeMeasurement.get();
+            typeMeasure.setIdCustomer(measurementBean.getIdCustomer());
+            typeMeasure.setTypeName(measurementBean.getTypeName());
+            typeMeasure = tmRepo.save(typeMeasure);
+            logger.info("measurement type udated successfully: "+typeMeasure.getIdTypeMeasure());
+            if (typeMeasure.getIdTypeMeasure()>0){
+                List<MeasurementBean> measurements = createMeasurements(measurementBean.getMeasurements(), typeMeasure.getIdTypeMeasure());
+                TypeMeasurementBean typeMeasurementBean = new TypeMeasurementBean();
+                BeanUtils.copyProperties(typeMeasure, typeMeasurementBean);
+                typeMeasurementBean.setMeasurements(measurements);
+                return  typeMeasurementBean;
+            }
+
+        }else {
+            throw new FmkException("TM1002", "Invalid input values");
+        }
         return null;
     }
 
@@ -129,8 +164,31 @@ public class MeasurementServiceImpl implements MeasurementService {
     }
 
     @Override
-
     public String deleteMeasurementById(int id) {
-        return "";
+        if (id>0){
+            deleteMeasurementByIdType(id);
+            tmRepo.deleteById(id);
+        }else {
+            return "Invalid Id: "+id;
+        }
+        return "Measurement deleted successfully..";
+    }
+
+    @Override
+    public TypeMeasurementBean getMeasurementById(int idTypeMeasure) {
+        if (idTypeMeasure>0){
+            Optional<TypeMeasurement> typeMeasurement = tmRepo.findById(idTypeMeasure);
+            if (typeMeasurement.isPresent()){
+                TypeMeasurementBean typeMeasurementBean = new TypeMeasurementBean();
+                BeanUtils.copyProperties(typeMeasurement.get(),typeMeasurementBean);
+                typeMeasurementBean.setMeasurements(fetchMeasurementsByTypeId(typeMeasurement.get().getIdTypeMeasure()));
+                return typeMeasurementBean;
+            }
+        }
+        return  null;
+    }
+
+    private void deleteMeasurementByIdType(int id) {
+        measurementRepository.deleteAllByIdTypeMeasure(id);
     }
 }
