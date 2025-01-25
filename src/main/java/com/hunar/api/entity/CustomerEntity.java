@@ -9,9 +9,9 @@ import java.util.List;
 @Table(name = "TM_CUSTOMER")
 public class CustomerEntity extends GenericEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID_CUSTOMER")
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        @Column(name = "ID_CUSTOMER")
         private int customerId;
 
         @Column(name = "CUSTOMER_NAME")
@@ -23,13 +23,17 @@ public class CustomerEntity extends GenericEntity {
         @Column(name = "MOBILE_NO")
         private String mobileNo;
 
+        @Column(name = "GENDER")
         private String gender;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<Order> bookings;
+        @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+        private List<Order> bookings;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<Address> addresses;
+        @Column(name = "ADDRESS")
+        private String address;
+
+//        @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+//        private List<TypeMeasurement> typeMeasurements;
 
     public  CustomerEntity(){
         super();
@@ -51,13 +55,13 @@ public class CustomerEntity extends GenericEntity {
         this.bookings = bookings;
     }
 
-    public List<Address> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
-    }
+//    public List<Address> getAddresses() {
+//        return addresses;
+//    }
+//
+//    public void setAddresses(List<Address> addresses) {
+//        this.addresses = addresses;
+//    }
 
     public int getCustomerId() {
         return customerId;
@@ -89,5 +93,13 @@ public class CustomerEntity extends GenericEntity {
 
     public void setMobileNo(String mobileNo) {
         this.mobileNo = mobileNo;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

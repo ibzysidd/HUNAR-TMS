@@ -18,9 +18,10 @@ public class CustomerBean extends GenericBean {
 
     private String gender;
 
+    private String address;
+
     private List<OrderBean> orderBeans;
 
-    private List<AddressBean> addressBeans;
 
     public CustomerBean() {
         super();
@@ -74,11 +75,11 @@ public class CustomerBean extends GenericBean {
         this.orderBeans = orderBeans;
     }
 
-    public List<AddressBean> getAddressBeans() {
-        return addressBeans;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAddressBeans(List<AddressBean> addressBeans) {
-        this.addressBeans = addressBeans;
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
