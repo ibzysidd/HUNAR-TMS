@@ -22,4 +22,6 @@ public interface UserRepository extends CrudRepository<UserEntity, Integer> {
     UserEntity findByMobileNo(String mobile);
 
 	UserEntity findBySecretToken(String jwt);
+
+    List<UserEntity> findAllByRoles(String roleAdmin);
 }

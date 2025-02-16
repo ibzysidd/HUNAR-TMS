@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -72,6 +73,8 @@ public class OrderServiceImpl implements OrderService {
         orderEntity.setBookingDate(LocalDate.now());
         orderEntity.setIdCustomer(orderBean.getIdCustomer());
         orderEntity.setCustomerName(customer.getCustomerName());
+        orderEntity.setDeliveryDate(orderBean.getDeliveryDate());
+        orderEntity.setActualDeliveryDate(orderBean.getDeliveryDate());
 
         // If there is an image file, store it
 //        MultipartFile imageFile = orderBean.getImage();
@@ -81,6 +84,7 @@ public class OrderServiceImpl implements OrderService {
 //        }
 
         orderEntity.setOrderStatus(Constants.IN_PROGRESS);
+        orderEntity.setPaymentStatus(Constants.UNPAID);
        orderEntity= orderRepository.save(orderEntity);
       List<TypeMeasurementBean> typeMeasurementBeans = createMapping(orderEntity,orderBean);
         logger.info("Created new order successfully: " + orderBean.toString());
@@ -368,6 +372,7 @@ public class OrderServiceImpl implements OrderService {
         Optional<Order> order = orderRepository.findById(idOrder);
         if (order.isPresent()){
             order.get().setOrderStatus(Constants.DELIVERED);
+            order.get().setActualDeliveryDate(LocalDate.now());
            Order order1 = orderRepository.save(order.get());
            OrderBean orderBean = new OrderBean();
            BeanUtils.copyProperties(order1, orderBean);
@@ -381,6 +386,7 @@ public class OrderServiceImpl implements OrderService {
         Optional<Order> order = orderRepository.findById(idOrder);
         if (order.isPresent()){
             order.get().setOrderStatus(Constants.COMPLETED);
+            order.get().setCompletionDate(LocalDate.now());
             Order order1 = orderRepository.save(order.get());
             OrderBean orderBean = new OrderBean();
             BeanUtils.copyProperties(order1, orderBean);
@@ -401,5 +407,32 @@ public class OrderServiceImpl implements OrderService {
             return  orderBean;
         }
         return  null;
+
+    }
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    @Override
+    public void schedulerForOrderDelivery() {
+        LocalDate targetDate = LocalDate.now().plusDays(4);
+        List<Order> orderList = orderRepository.findOrdersWithDeliveryDate(targetDate);
+        List<UserEntity> userEntities = userRepository.findAllByRoles("ROLE_ADMIN");
+        StringJoiner items = new StringJoiner(",");
+        for (Order order: orderList){
+            items.add(order.getOrderNo());
+        }
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("date", new Date().toString());
+        model.put("deliveryDate", targetDate);
+        model.put("edate", orderList.get(0).getDeliveryDate().toString());
+        model.put("items", items);
+        for (UserEntity userEntity: userEntities){
+            emailService.sendEmailForDelivery(userEntity.getUserEmail(), model);
+        }
+
+
     }
 }

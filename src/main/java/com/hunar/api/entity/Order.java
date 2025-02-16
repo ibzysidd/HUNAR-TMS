@@ -20,6 +20,10 @@ public class Order extends GenericEntity {
 
     private LocalDate deliveryDate;
 
+    private LocalDate actualDeliveryDate;
+
+    private LocalDate completionDate;
+
     private String comments;
 
     private String type; // pant, shirt etc
@@ -33,6 +37,8 @@ public class Order extends GenericEntity {
     private String customerName;
 
     private String alterComments;
+
+    private String paymentStatus;
 //    private String dart_point;
 //
 //    private String waist_length;
@@ -89,6 +95,14 @@ public class Order extends GenericEntity {
     @ManyToOne
     @JoinColumn(name = "ID_CUSTOMER")
     private CustomerEntity customer;
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
 
     public String getAlterComments() {
         return alterComments;
@@ -200,5 +214,21 @@ public class Order extends GenericEntity {
 
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
+    }
+
+    public LocalDate getActualDeliveryDate() {
+        return actualDeliveryDate;
+    }
+
+    public void setActualDeliveryDate(LocalDate actualDeliveryDate) {
+        this.actualDeliveryDate = actualDeliveryDate;
+    }
+
+    public LocalDate getCompletionDate() {
+        return completionDate;
+    }
+
+    public void setCompletionDate(LocalDate completionDate) {
+        this.completionDate = completionDate;
     }
 }

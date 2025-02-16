@@ -42,4 +42,7 @@ public class Constants {
 
 
     public static final String ALTERATION = "Alteration";
+    public static final String UNPAID = "Unpaid";
+	public static final String PAID = "Paid";
+    public static final String INCOMPLETE = "In-complete";
 }

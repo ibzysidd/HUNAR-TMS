@@ -91,4 +91,9 @@ public class OrderController {
         }
     }
 
+    @PostMapping(value = "/schedulerForOrderDelivery")
+    public void schedulerForOrderDelivery(){
+        orderService.schedulerForOrderDelivery();
+    }
+
 }

@@ -40,6 +40,12 @@ public class OrderBean extends GenericBean {
 
     private List<TypeMeasurementBean> typeMeasurementBeans = new ArrayList<>();
 
+    private String paymentStatus;
+
+    private LocalDate actualDeliveryDate;
+
+    private LocalDate completionDate;
+
 
 //    private MultipartFile image;
 
@@ -162,5 +168,29 @@ public class OrderBean extends GenericBean {
 
     public void setTypeMeasurementBeans(List<TypeMeasurementBean> typeMeasurementBeans) {
         this.typeMeasurementBeans = typeMeasurementBeans;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public LocalDate getActualDeliveryDate() {
+        return actualDeliveryDate;
+    }
+
+    public void setActualDeliveryDate(LocalDate actualDeliveryDate) {
+        this.actualDeliveryDate = actualDeliveryDate;
+    }
+
+    public LocalDate getCompletionDate() {
+        return completionDate;
+    }
+
+    public void setCompletionDate(LocalDate completionDate) {
+        this.completionDate = completionDate;
     }
 }
