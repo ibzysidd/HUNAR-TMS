@@ -11,10 +11,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableJpaRepositories
+@EnableScheduling
 public class HunarApiApplication extends SpringBootServletInitializer {
 
 	public static Logger logger = LogManager.getLogger();

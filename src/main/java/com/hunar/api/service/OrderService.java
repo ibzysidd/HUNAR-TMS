@@ -22,4 +22,6 @@ public interface OrderService {
     OrderBean orderCompleted(int idCustomer);
 
     OrderBean orderAlteration(int idOrder, String alterComments);
+
+    void schedulerForOrderDelivery();
 }

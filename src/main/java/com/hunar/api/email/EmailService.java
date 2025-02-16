@@ -59,4 +59,28 @@ public class EmailService {
 //		return response;
 	}
 
+	@Async
+	public void sendEmailForDelivery(String sendTo, Map<String, Object> model) {
+		EmailResponse response = new EmailResponse();
+		MimeMessage message = sender.createMimeMessage();
+
+		try {
+			MimeMessageHelper helper = new MimeMessageHelper(message);
+			Template template = configuration.getTemplate("delivery-email-template.ftl");
+			String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+
+			helper.setTo(sendTo);
+			helper.setText(html, true);
+			helper.setSubject("Orders to be delivered");
+			helper.setFrom(senderEmail);
+			sender.send(message);
+
+		} catch (MessagingException | IOException | TemplateException e) {
+			response.setMessage("Mail Sending failure : " + e.getMessage());
+			response.setStatus(Boolean.FALSE);
+		}
+
+//		return response;
+	}
+
 }
