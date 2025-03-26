@@ -14,12 +14,13 @@ public class UserBean extends GenericBean {
 	private String isAdmin;
 	private String roles;
 	private String mobileNo;
+	private String viewPassword;
 
 	public UserBean() {
 		super();
 	}
 
-	public UserBean(int userId, String userName, String userEmail, String firstName, String lastName, String userPassword, String isAdmin, String isActive, String roles, String mobileNo) {
+	public UserBean(int userId, String viewPassword, String userName, String userEmail, String firstName, String lastName, String userPassword, String isAdmin, String isActive, String roles, String mobileNo) {
 		this.userId = userId;
 		this.userName = userName;
 		this.userEmail = userEmail;
@@ -30,6 +31,7 @@ public class UserBean extends GenericBean {
 		this.isActive = isActive;
 		this.roles = roles;
 		this.mobileNo = mobileNo;
+		this.viewPassword = viewPassword;
 	}
 
 	public String getUserName() {
@@ -110,5 +112,13 @@ public class UserBean extends GenericBean {
 
 	public void setMobileNo(String mobileNo) {
 		this.mobileNo = mobileNo;
+	}
+
+	public String getViewPassword() {
+		return viewPassword;
+	}
+
+	public void setViewPassword(String viewPassword) {
+		this.viewPassword = viewPassword;
 	}
 }

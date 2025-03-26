@@ -28,6 +28,9 @@ public class UserEntity extends GenericEntity {
 	@Column(name = "PASSWORD_USER")
 	private String userPassword;
 
+	@Column(name = "VIEW_PASSWORD")
+	private String viewPassword;
+
 	@Column(name = "IS_ACTIVE")
 	private String isActive;
 
@@ -49,20 +52,28 @@ public class UserEntity extends GenericEntity {
 		super();
 	}
 
-	public UserEntity(String userName, String userEmail, int userId, String firstName, String lastName, String userPassword, String isActive, String isAdmin, String roles, String secretToken,
-					  String mobileNo, String gender) {
+	public UserEntity(int userId, String userName, String userEmail, String firstName, String lastName, String userPassword, String viewPassword, String isActive, String isAdmin, String roles, String secretToken, String mobileNo, String gender) {
+		this.userId = userId;
 		this.userName = userName;
 		this.userEmail = userEmail;
-		this.userId = userId;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.userPassword = userPassword;
+		this.viewPassword = viewPassword;
 		this.isActive = isActive;
 		this.isAdmin = isAdmin;
 		this.roles = roles;
 		this.secretToken = secretToken;
-		this.mobileNo=mobileNo;
-		this.gender=gender;
+		this.mobileNo = mobileNo;
+		this.gender = gender;
+	}
+
+	public String getViewPassword() {
+		return viewPassword;
+	}
+
+	public void setViewPassword(String viewPassword) {
+		this.viewPassword = viewPassword;
 	}
 
 	public int getUserId() {

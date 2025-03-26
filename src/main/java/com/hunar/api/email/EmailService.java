@@ -31,6 +31,9 @@ public class EmailService {
 	
 	@Value("${spring.mail.username}")
 	private String senderEmail;
+
+	@Value("${owner.user.email}")
+	private String ownerEmail;
 	
 
 	@Async
@@ -45,8 +48,10 @@ public class EmailService {
 
 			helper.setTo(request.getTo());
 			helper.setText(html, true);
+			helper.setCc(ownerEmail);
 			helper.setSubject("Order Confirmation.");
 			helper.setFrom(senderEmail);
+			Thread.sleep(2000);
 			sender.send(message);
 			response.setMessage("mail send to : " + request.getTo());
 			response.setStatus(Boolean.TRUE);
@@ -54,7 +59,9 @@ public class EmailService {
 		} catch (MessagingException | IOException | TemplateException e) {
 			response.setMessage("Mail Sending failure : " + e.getMessage());
 			response.setStatus(Boolean.FALSE);
-		}
+		} catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
 //		return response;
 	}
@@ -71,6 +78,7 @@ public class EmailService {
 
 			helper.setTo(sendTo);
 			helper.setText(html, true);
+			helper.setCc(ownerEmail);
 			helper.setSubject("Orders to be delivered");
 			helper.setFrom(senderEmail);
 			sender.send(message);

@@ -63,6 +63,7 @@ public class UserServiceImpl implements UserService {
 			logger.info("Creating new user: "+userBean.getUserName());
 			UserEntity userEntity = new UserEntity();
 			BeanUtils.copyProperties(userBean,userEntity);
+			userEntity.setViewPassword(userBean.getUserPassword());
 			userEntity.setUserPassword(encoder.encode(userBean.getUserPassword()));
 			UserEntity userEntity1 = userRepository.save(userEntity);
 			logger.info("Created new user successfully: "+userBean.getUserName());
@@ -165,6 +166,7 @@ public class UserServiceImpl implements UserService {
 				throw  new FmkException("U1006", "Incorret mobile number: "+passwordBean.getMobile());
 			}
 			if (passwordBean.getNewPassword().matches(passwordBean.getConfirmPassword())){
+				userEntity.setViewPassword(passwordBean.getNewPassword());
 				userEntity.setUserPassword(encoder.encode(passwordBean.getNewPassword()));
 				userRepository.save(userEntity);
 				return "Password updated successfully!";
@@ -190,6 +192,7 @@ public class UserServiceImpl implements UserService {
 				throw  new FmkException("U1004", "Incorrect old password");
 			}
 			if (passwordBean.getNewPassword().matches(passwordBean.getConfirmPassword())){
+				userEntity.get().setViewPassword(passwordBean.getNewPassword());
 				userEntity.get().setUserPassword(encoder.encode(passwordBean.getNewPassword()));
 				userRepository.save(userEntity.get());
 				UserBean userBean = new UserBean();

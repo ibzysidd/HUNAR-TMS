@@ -62,6 +62,9 @@ public class OrderServiceImpl implements OrderService {
     @Value("${company.mobile.number}")
     private String companyMobileNo;
 
+    @Value("${cron.jobs.time}")
+    private static final String cronJobs = "0 0 23 * * *";
+
     @Override
     public OrderBean createOrder(OrderBean orderBean) throws FmkException, IOException {
         logger.info("Creating new order: " + orderBean.toString());
@@ -413,7 +416,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     UserRepository userRepository;
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = cronJobs)
     @Override
     public void schedulerForOrderDelivery() {
         LocalDate targetDate = LocalDate.now().plusDays(4);
