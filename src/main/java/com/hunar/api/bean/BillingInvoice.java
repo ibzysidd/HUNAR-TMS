@@ -11,6 +11,7 @@ public class BillingInvoice {
     private BillingEntity billingEntity;
     private List<BillingMapEntity> items;
     private CompanyEntity companyEntity;
+    private  String customerName;
 //    private Order order;
 
     public BillingEntity getBillingEntity() {
@@ -37,7 +38,15 @@ public class BillingInvoice {
         this.companyEntity = companyEntity;
     }
 
-//    public Order getOrder() {
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    //    public Order getOrder() {
 //        return order;
 //    }
 //

@@ -5,15 +5,9 @@ import com.hunar.api.bean.BillingInvoice;
 import com.hunar.api.bean.BillingMapBean;
 import com.hunar.api.bean.OrderBean;
 import com.hunar.api.constant.Constants;
-import com.hunar.api.entity.BillingEntity;
-import com.hunar.api.entity.BillingMapEntity;
-import com.hunar.api.entity.CompanyEntity;
-import com.hunar.api.entity.Order;
+import com.hunar.api.entity.*;
 import com.hunar.api.exceptionHandling.util.FmkException;
-import com.hunar.api.repository.BillingMapRepository;
-import com.hunar.api.repository.BillingRepository;
-import com.hunar.api.repository.CompanyRepository;
-import com.hunar.api.repository.OrderRepository;
+import com.hunar.api.repository.*;
 import com.hunar.api.service.BillingService;
 import com.hunar.api.service.OrderService;
 import org.apache.logging.log4j.LogManager;
@@ -257,12 +251,16 @@ public class BillingServiceImpl implements BillingService {
     @Autowired
     CompanyRepository companyRepository;
 
+    @Autowired
+    CustomerRepository customerRepository;
+
     @Override
     public BillingInvoice generateBillingInvoice(int idBill) throws FmkException {
         if (idBill<1){
             throw new FmkException("BL1006", "Invalid billing id");
         }
         Optional<BillingEntity> billingEntity = billingRepository.findById(idBill);
+        CustomerEntity customerEntity = customerRepository.findById(billingEntity.get().getIdCustomer()).get();
         List<BillingMapEntity> items = billingMapRepository.findAllByIdBilling(billingEntity.get().getIdBill());
 //        Order order = orderRepository.findByOrderNo(billingEntity.get().getOrderNo());
         CompanyEntity companyEntity = companyRepository.findAll().get(0);
@@ -271,6 +269,7 @@ public class BillingServiceImpl implements BillingService {
         billingInvoice.setBillingEntity(billingEntity.get());
         billingInvoice.setItems(items);
         billingInvoice.setCompanyEntity(companyEntity);
+        billingInvoice.setCustomerName(customerEntity.getCustomerName());
 //        billingInvoice.setOrder(order);
 
         return billingInvoice;
