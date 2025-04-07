@@ -18,14 +18,18 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -36,6 +40,7 @@ public class OrderServiceImpl implements OrderService {
     private static final String DATE_FORMAT = "yyyyMMdd";
     private final AtomicInteger counter = new AtomicInteger(1);  // Atomic counter for uniqueness
     private String currentDate = getCurrentDate();
+    private final Map<String, AtomicInteger> orderNumberCache = new ConcurrentHashMap<>();
 
     @Autowired
     OrderRepository orderRepository;
@@ -70,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
         logger.info("Creating new order: " + orderBean.toString());
         Order orderEntity = new Order();
         BeanUtils.copyProperties(orderBean, orderEntity);
-        orderEntity.setOrderNo(generateOrderNumber());
+        orderEntity.setOrderNo(generateUniqueOrderId());
         CustomerEntity customer = checkByCustomerId(orderBean.getIdCustomer());
         orderEntity.setCustomer(customer);
         orderEntity.setBookingDate(LocalDate.now());
@@ -97,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
         orderBean1.setCustomerName(orderEntity.getCustomerName());
 
         //sending email to customer
-        sendEmail(orderBean1);
+//        sendEmail(orderBean1);
         return  orderBean1;
     }
 
@@ -186,7 +191,58 @@ public class OrderServiceImpl implements OrderService {
 
         // Format the order number
         String orderNumber = String.format("%s%s-%04d", PREFIX, todayDate, counter.getAndIncrement());
+        Order order = orderRepository.findByOrderNo(orderNumber);
+        if (order!=null){
+           return orderNumber = incrementOrderId(orderNumber);
+
+        }
         return orderNumber;
+    }
+
+    public  String incrementOrderId(String orderId) {
+        // Split the order ID by the last dash
+        int lastDashIndex = orderId.lastIndexOf('-');
+        String prefix = orderId.substring(0, lastDashIndex + 1); // includes the dash
+        String numberPart = orderId.substring(lastDashIndex + 1); // e.g., "0003"
+
+        // Parse the number part, increment, and format it back with leading zeros
+        int number = Integer.parseInt(numberPart);
+        number++; // increment by 1
+        String newNumberPart = String.format("%04d", number); // always 4 digits
+
+        // Combine back
+        return prefix + newNumberPart;
+    }
+
+    public synchronized String generateUniqueOrderId() {
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String prefix = "ORD-" + date + "-";
+
+        // Load or initialize counter
+        AtomicInteger counter = orderNumberCache.computeIfAbsent(date, d -> {
+            // Query DB for latest order today
+            Pageable limitOne = PageRequest.of(0, 1);
+            List<String> latest = orderRepository.findLatestOrderNoByDate(d, limitOne);
+
+            int lastNumber = 0;
+            if (!latest.isEmpty()) {
+                String lastOrderId = latest.get(0);
+                String numberPart = lastOrderId.substring(lastOrderId.lastIndexOf('-') + 1);
+                lastNumber = Integer.parseInt(numberPart);
+            }
+
+            return new AtomicInteger(lastNumber);
+        });
+
+        String newOrderId;
+
+        // Keep trying until we find a unique one (safety net)
+        do {
+            int nextNumber = counter.incrementAndGet();
+            newOrderId = prefix + String.format("%04d", nextNumber);
+        } while (orderRepository.existsByOrderNo(newOrderId));
+
+        return newOrderId;
     }
 
     // Helper method to get current date in the desired format
