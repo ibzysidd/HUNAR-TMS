@@ -63,6 +63,8 @@ public class UserServiceImpl implements UserService {
 			logger.info("Creating new user: "+userBean.getUserName());
 			UserEntity userEntity = new UserEntity();
 			BeanUtils.copyProperties(userBean,userEntity);
+			String username = userBean.getUserName().toLowerCase();
+			userEntity.setUserName(username);
 			userEntity.setViewPassword(userBean.getUserPassword());
 			userEntity.setUserPassword(encoder.encode(userBean.getUserPassword()));
 			UserEntity userEntity1 = userRepository.save(userEntity);

@@ -102,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
         orderBean1.setCustomerName(orderEntity.getCustomerName());
 
         //sending email to customer
-//        sendEmail(orderBean1);
+        sendEmail(orderBean1);
         return  orderBean1;
     }
 
