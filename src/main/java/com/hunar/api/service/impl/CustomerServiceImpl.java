@@ -65,7 +65,7 @@ public class CustomerServiceImpl implements CustomerService {
             customerEntity.get().setMobileNo(customerBean.getMobileNo());
             customerEntity.get().setGender(customerBean.getGender());
             customerEntity.get().setCustomerName(customerBean.getCustomerName());
-            customerEntity.get().setCustomerName(customerBean.getAddress());
+            customerEntity.get().setAddress(customerBean.getAddress());
            CustomerEntity customerEntity1 = customerRepository.save(customerEntity.get());
             logger.info("Updated customer successfully: " + customerBean.getCustomerName());
             CustomerBean customerBean1 = new CustomerBean();

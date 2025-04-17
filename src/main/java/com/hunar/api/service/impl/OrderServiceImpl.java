@@ -42,6 +42,9 @@ public class OrderServiceImpl implements OrderService {
     private String currentDate = getCurrentDate();
     private final Map<String, AtomicInteger> orderNumberCache = new ConcurrentHashMap<>();
 
+    @Value("${owner.user.email}")
+    private String ownerEmail;
+
     @Autowired
     OrderRepository orderRepository;
 
@@ -116,7 +119,12 @@ public class OrderServiceImpl implements OrderService {
         request.setTo(customerEntity.getCustomerEmail());
         Map<String, Object> model = new HashMap<>();
         model.put("name", orderBean1.getCustomerName());
-        model.put("to",customerEntity.getCustomerEmail());
+        if (customerEntity.getCustomerEmail()!=null && !customerEntity.getCustomerEmail().isBlank()){
+            model.put("to",customerEntity.getCustomerEmail());
+        }
+        else {
+            model.put("to",ownerEmail);
+        }
         model.put("date", new Date().toString());
         model.put("orderNo", orderBean1.getOrderNo());
         model.put("sdate", orderBean1.getBookingDate().toString());
